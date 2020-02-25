@@ -1,0 +1,141 @@
+String inputString = "";         // a String to hold incoming data
+String undato = "";
+bool stringComplete = false;  // whether the string is complete
+float ledX = 2; float ledY = 3;
+float datoX = 0; float datoY=0;//-----------------------------datos nuevos en X y en Y
+float datoViejoX = 0; float datoViejoY=0;//-------------------datos viejos en X y en Y, heredados siempre de "datoX y datoY"
+float deltaX = 0; float deltaY = 0;//-------------------------valores absolutos en X y Y
+float larga = 0;//------------------------------------------toma el valor de la coordenada mas LARGA en el plano cartesiano
+float corta = 0;//------------------------------------------toma el valor de la coordenada mas CORTA en el plano cartesiano
+float avanceCorto = 0;//---------------------------------resultado de dividir "larga/corta" declaradas en la lineas superiores
+float acumCorto = 0;//-----------------------------------acumula la variable "avanceCorto" declarada en la linea superior
+float comparador = 0;//----------------------------------se va a comparar con "avanceCorto" declarado en linea 10
+int contadorPruebaX = 0;
+int contadorPruebaY = 0;
+void setup() {
+  // initialize serial:
+  Serial.begin(9600);
+  // reserve 200 bytes for the inputString:
+  inputString.reserve(200);
+    pinMode(ledX, OUTPUT);
+    pinMode(ledY, OUTPUT);
+}
+
+void loop() {
+  // print the string when a newline arrives:
+  if (stringComplete) {
+    //Serial.println(undato);
+    // clear the string:
+    inputString = "";
+    stringComplete = false;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void serialEvent() {
+  while (Serial.available()) {
+    char inChar = (char)Serial.read();
+    
+    if(inChar != 'x' && inChar != 'y' && inChar != 's' && inChar != 'b')
+    {
+      inputString += inChar;
+    }
+    else if(inChar == 'x')
+    {
+      datoX = inputString.toInt();
+      //Serial.println(datoX);
+      inputString = ""; 
+    }
+    else if(inChar == 'y')
+    {
+      datoY = inputString.toInt();
+      //Serial.println((String)datoX + "    " + (String)datoY);
+      mover();
+      undato = inputString;
+      stringComplete = true;
+    }
+    else if(inChar == 's')
+    {
+      //datoSolicitud = "S";
+      stringComplete = true;
+    }
+    else if(inChar == 'b')
+    {
+      //datoSolicitud = "B";
+      stringComplete = true;
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void mover(){
+  int deltaX = abs(datoX - datoViejoX);
+  int deltaY = abs(datoY - datoViejoY);
+    
+  
+  if(deltaX > deltaY)
+  {
+    if(deltaY > 0)
+    {
+      avanceCorto = (float)deltaX / (float)deltaY;
+      //Serial.println(avanceCorto);
+    }
+    for(int t = 0; t < deltaX; t++)//-------------------------------se recorre el "deltaX" por ser la coordenada mas larga en el plano cartesiano
+    {
+      contadorPruebaX++;
+      if(deltaY > 0)
+      {
+        if(t >= acumCorto)
+        {
+          acumCorto += avanceCorto;
+          contadorPruebaY++;
+        }
+      }
+    }
+    //Serial.println((String)contadorPruebaX + "    " + (String)contadorPruebaY);
+    contadorPruebaX = contadorPruebaY = 0;/////////////////////////////////////esto mas adelante se debe comentar
+    acumCorto = avanceCorto = 0;
+  }
+  else if(deltaY > deltaX)
+  {
+    if(deltaX > 0)
+    {
+      avanceCorto = (float)deltaY / (float)deltaX;
+    }
+    for(int t = 0; t < deltaY; t++)//-------------------------------se recorre el "deltaY" por ser la coordenada mas larga en el plano cartesiano
+    {
+      contadorPruebaY++;
+      if(deltaX > 0)
+      {
+        if(t >= acumCorto)
+        {
+          acumCorto += avanceCorto;
+          contadorPruebaX++;
+        }
+      }
+    }
+    //Serial.println((String)contadorPruebaX + "    " + (String)contadorPruebaY);
+    contadorPruebaX = contadorPruebaY = 0;/////////////////////////////////////esto mas adelante se debe comentar
+    acumCorto = avanceCorto = 0;
+  }
+  else
+  {
+    for(int t = 0; t < deltaY; t++)//-------------------------------se recorre cualquier "delta" porque ambos iguales, en este caso se recorre el "Y"
+    {
+      contadorPruebaX++;
+      contadorPruebaY++;
+    }
+    //Serial.println((String)contadorPruebaX + "    " + (String)contadorPruebaY);
+    contadorPruebaX = contadorPruebaY = 0;/////////////////////////////////////esto mas adelante se debe comentar
+  }
+  datoViejoX = datoX;
+  datoViejoY = datoY;
+  
+  Serial.print("S");
+}
