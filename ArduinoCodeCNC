@@ -1,6 +1,7 @@
 #include <Arduino.h>
 String inputString = "";         // a String to hold incoming data
 String undato = "";
+String movimiento = "";
 bool stringComplete = false;  // whether the string is complete
 float ledX = 2; float ledY = 3;
 int Z_STEP = 18;
@@ -57,10 +58,12 @@ void mover() {
   int deltaY = abs(datoY - datoViejoY);
 /////////////////////////////////////DETERMINAR SI VA A IZQUIERDA O DERECHA
   if((datoX - datoViejoX) > 0){
+    movimiento += "derecha - ";
     //se mueve hacia la derecha
     digitalWrite(X_DIR, HIGH);
   }
   else if((datoX - datoViejoX) < 0){
+    movimiento += "izquierda - ";
     //se mueve hacia la izquierda
     digitalWrite(X_DIR, LOW);
   }
@@ -69,10 +72,12 @@ void mover() {
   }
 /////////////////////////////////////DETERMINAR SI VA A ARRIBA O ABAJO
   if((datoY - datoViejoY) > 0){
+    movimiento += "arriba";
     //se mueve hacia arriba
     digitalWrite(Y_DIR, HIGH);
   }
   else if((datoY - datoViejoY) < 0){
+    movimiento += "abajo";
     //se mueve hacia abajo
     digitalWrite(Y_DIR, LOW);
   }
@@ -111,9 +116,11 @@ void mover() {
         }
       }
     }
+    Serial.println(movimiento);
     Serial.println((String)contadorPruebaX + "    " + (String)contadorPruebaY);//esto mas adelante se debe comentar
     contadorPruebaX = contadorPruebaY = 0;///////////////////////////////////////esto mas adelante se debe comentar
     acumCorto = avanceCorto = 0;
+    movimiento = "";/////////////////////////////////////////////////////////////esto mas adelante se debe comentar
   }
   else if (deltaY > deltaX) ///EL DESPLAZAMIENTO ES MAYOR EN EL EJE "Y"
   {
@@ -147,9 +154,11 @@ void mover() {
         }
       }
     }
+    Serial.println(movimiento);
     Serial.println((String)contadorPruebaX + "    " + (String)contadorPruebaY);//esto mas adelante se debe comentar
     contadorPruebaX = contadorPruebaY = 0;///////////////////////////////////////esto mas adelante se debe comentar
     acumCorto = avanceCorto = 0;
+    movimiento = "";/////////////////////////////////////////////////////////////esto mas adelante se debe comentar
   }
   else ///EL DESPLAZAMIENTO ES EL MISMO EN AMBOS EJES
   {
@@ -162,11 +171,10 @@ void mover() {
     contadorPruebaX = contadorPruebaY = 0;/////////////////////////////////////esto mas adelante se debe comentar
   }
 
-
   datoViejoX = datoX;
   datoViejoY = datoY;
 
-  Serial.print("S");
+  //Serial.print("S");
 }
 
 
