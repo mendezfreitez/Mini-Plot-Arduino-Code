@@ -47,9 +47,9 @@ void loop() {
 void moverZ(){
   for(int t = 0; t < 50; t++){
       digitalWrite(Z_STEP, HIGH);
-      delay(10);
+      delay(5);
       digitalWrite(Z_STEP, LOW);
-      delay(10);
+      delay(5);
     }
 }
 
@@ -95,7 +95,7 @@ void mover() {
     {
       ///////////////////////////////////////////////// PASO EN X
       digitalWrite(X_STEP, HIGH);
-      delay(10);
+      delay(5);
       digitalWrite(X_STEP, LOW);
       contadorPruebaX++;
       if (deltaY > 0)
@@ -104,7 +104,7 @@ void mover() {
         {
           ///////////////////////////////////////////////// PASO EN Y
           digitalWrite(Y_STEP, HIGH);
-          delay(10);
+          delay(5);
           digitalWrite(Y_STEP, LOW);
 
           acumCorto += avanceCorto;
@@ -112,7 +112,7 @@ void mover() {
         }
         else
         {
-          delay(10);
+          delay(5);
         }
       }
     }
@@ -132,7 +132,7 @@ void mover() {
     {
       ///////////////////////////////////////////////// PASO EN Y
       digitalWrite(Y_STEP, HIGH);
-      delay(10);
+      delay(5);
       digitalWrite(Y_STEP, LOW);
       
       contadorPruebaY++;
@@ -142,7 +142,7 @@ void mover() {
         {
           ///////////////////////////////////////////////// PASO EN X
           digitalWrite(X_STEP, HIGH);
-          delay(10);
+          delay(5);
           digitalWrite(X_STEP, LOW);
           
           acumCorto += avanceCorto;
@@ -150,7 +150,7 @@ void mover() {
         }
         else
         {
-          delay(10);
+          delay(5);
         }
       }
     }
