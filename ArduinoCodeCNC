@@ -3,29 +3,25 @@ String inputString = "";         // a String to hold incoming data
 String undato = "";
 String movimiento = "";
 bool stringComplete = false;  // whether the string is complete
-float ledX = 2; float ledY = 3;
 int Z_STEP = 18;
 int Z_DIR = 19;
 int Y_STEP = 16;
 int Y_DIR = 17;
 int X_STEP = 14;
 int X_DIR = 15;
-float datoX = 0; float datoY = 0; //-----------------------------datos nuevos en X y en Y
-float datoViejoX = 0; float datoViejoY = 0; //-------------------datos viejos en X y en Y, heredados siempre de "datoX y datoY"
+float datoX = 0.0; float datoY = 0.0; //-----------------------------datos nuevos en X y en Y
+float datoViejoX = 0.0; float datoViejoY = 0.0; //-------------------datos viejos en X y en Y, heredados siempre de "datoX y datoY"
 float deltaX = 0; float deltaY = 0;//-------------------------valores absolutos en X y Y
-float larga = 0;//------------------------------------------toma el valor de la coordenada mas LARGA en el plano cartesiano
-float corta = 0;//------------------------------------------toma el valor de la coordenada mas CORTA en el plano cartesiano
-float avanceCorto = 0;//---------------------------------resultado de dividir "larga/corta" declaradas en la lineas superiores
-float acumCorto = 0;//-----------------------------------acumula la variable "avanceCorto" declarada en la linea superior
-float comparador = 0;//----------------------------------se va a comparar con "avanceCorto" declarado en linea 10
-int contadorPruebaX = 0;
-int contadorPruebaY = 0;
+float avanceCorto = 0.0;//---------------------------------resultado de dividir "larga/corta" declaradas en la lineas superiores
+float acumCorto = 0.0;//-----------------------------------acumula la variable "avanceCorto" declarada en la linea superior
+float comparador = 0.0;//----------------------------------se va a comparar con "avanceCorto" declarado en linea 10
+
 void setup() {
   Serial.begin(9600);
   
   inputString.reserve(200);
-  pinMode(ledX, OUTPUT);
-  pinMode(ledY, OUTPUT);
+  // pinMode(ledX, OUTPUT);
+  // pinMode(ledY, OUTPUT);
   pinMode(X_STEP, OUTPUT);
   pinMode(X_DIR, OUTPUT);
   pinMode(Y_STEP, OUTPUT);
@@ -37,8 +33,6 @@ void setup() {
 void loop() {
   // print the string when a newline arrives:
   if (stringComplete) {
-    //Serial.println(undato);
-    // clear the string:
     inputString = "";
     stringComplete = false;
   }
@@ -49,41 +43,22 @@ void moverZ(){
       digitalWrite(Z_STEP, HIGH);
       delay(5);
       digitalWrite(Z_STEP, LOW);
-      delay(5);
+      delay(5); 
     }
+    Serial.print("S");
 }
 
 void mover() {
   int deltaX = abs(datoX - datoViejoX);
   int deltaY = abs(datoY - datoViejoY);
 /////////////////////////////////////DETERMINAR SI VA A IZQUIERDA O DERECHA
-  if((datoX - datoViejoX) > 0){
-    movimiento += "derecha - ";
-    //se mueve hacia la derecha
-    digitalWrite(X_DIR, HIGH);
-  }
-  else if((datoX - datoViejoX) < 0){
-    movimiento += "izquierda - ";
-    //se mueve hacia la izquierda
-    digitalWrite(X_DIR, LOW);
-  }
-  else{
-    //se queda alli y solo se mueve en el eje de las Y
-  }
+  if((datoX - datoViejoX) > 0){ digitalWrite(X_DIR, HIGH); }
+  else if((datoX - datoViejoX) < 0){ digitalWrite(X_DIR, LOW); }
+  else{ }
 /////////////////////////////////////DETERMINAR SI VA A ARRIBA O ABAJO
-  if((datoY - datoViejoY) > 0){
-    movimiento += "arriba";
-    //se mueve hacia arriba
-    digitalWrite(Y_DIR, HIGH);
-  }
-  else if((datoY - datoViejoY) < 0){
-    movimiento += "abajo";
-    //se mueve hacia abajo
-    digitalWrite(Y_DIR, LOW);
-  }
-  else{
-    //se queda alli y solo se mueve en el eje de las X
-  }
+  if((datoY - datoViejoY) > 0) { digitalWrite(Y_DIR, HIGH); }
+  else if((datoY - datoViejoY) < 0) { digitalWrite(Y_DIR, LOW); }
+  else{ }
 
   if (deltaX > deltaY) ///EL DESPLAZAMIENTO ES MAYOR EN EL EJE "X"
   {
@@ -97,7 +72,6 @@ void mover() {
       digitalWrite(X_STEP, HIGH);
       delay(5);
       digitalWrite(X_STEP, LOW);
-      contadorPruebaX++;
       if (deltaY > 0)
       {
         if (t >= acumCorto)
@@ -108,7 +82,6 @@ void mover() {
           digitalWrite(Y_STEP, LOW);
 
           acumCorto += avanceCorto;
-          contadorPruebaY++;
         }
         else
         {
@@ -116,11 +89,7 @@ void mover() {
         }
       }
     }
-    Serial.println(movimiento);
-    Serial.println((String)contadorPruebaX + "    " + (String)contadorPruebaY);//esto mas adelante se debe comentar
-    contadorPruebaX = contadorPruebaY = 0;///////////////////////////////////////esto mas adelante se debe comentar
-    acumCorto = avanceCorto = 0;
-    movimiento = "";/////////////////////////////////////////////////////////////esto mas adelante se debe comentar
+    acumCorto = avanceCorto = 0.0;
   }
   else if (deltaY > deltaX) ///EL DESPLAZAMIENTO ES MAYOR EN EL EJE "Y"
   {
@@ -135,7 +104,6 @@ void mover() {
       delay(5);
       digitalWrite(Y_STEP, LOW);
       
-      contadorPruebaY++;
       if (deltaX > 0)
       {
         if (t >= acumCorto)
@@ -146,7 +114,6 @@ void mover() {
           digitalWrite(X_STEP, LOW);
           
           acumCorto += avanceCorto;
-          contadorPruebaX++;
         }
         else
         {
@@ -154,27 +121,24 @@ void mover() {
         }
       }
     }
-    Serial.println(movimiento);
-    Serial.println((String)contadorPruebaX + "    " + (String)contadorPruebaY);//esto mas adelante se debe comentar
-    contadorPruebaX = contadorPruebaY = 0;///////////////////////////////////////esto mas adelante se debe comentar
-    acumCorto = avanceCorto = 0;
-    movimiento = "";/////////////////////////////////////////////////////////////esto mas adelante se debe comentar
+    acumCorto = avanceCorto = 0.0;
   }
   else ///EL DESPLAZAMIENTO ES EL MISMO EN AMBOS EJES
   {
     for (int t = 0; t < deltaY; t++) //-------------------------------se recorre cualquier "delta" porque ambos iguales, en este caso se recorre el "Y"
     {
-      contadorPruebaX++;
-      contadorPruebaY++;
+        digitalWrite(X_STEP, HIGH);
+        digitalWrite(Y_STEP, HIGH);
+        delay(5);
+        digitalWrite(X_STEP, LOW);
+        digitalWrite(Y_STEP, LOW);
     }
-    Serial.println((String)contadorPruebaX + "    " + (String)contadorPruebaY);
-    contadorPruebaX = contadorPruebaY = 0;/////////////////////////////////////esto mas adelante se debe comentar
   }
 
   datoViejoX = datoX;
   datoViejoY = datoY;
 
-  //Serial.print("S");
+  Serial.print("S");
 }
 
 
@@ -182,20 +146,18 @@ void serialEvent() {
   while (Serial.available()) {
     char inChar = (char)Serial.read();
 
-    if (inChar != 'x' && inChar != 'y' && inChar != 's' && inChar != 'b')
+    if (inChar != 'x' && inChar != 'y' && inChar != 's' && inChar != 'b' && inChar != 'D' && inChar != 'F')
     {
       inputString += inChar;
     }
     else if (inChar == 'x')
     {
-      datoX = inputString.toInt();
-      //Serial.println(datoX);
+      datoX = inputString.toFloat();
       inputString = "";
     }
     else if (inChar == 'y')
     {
-      datoY = inputString.toInt();
-      //Serial.println((String)datoX + "    " + (String)datoY);
+      datoY = inputString.toFloat();
       mover(); 
       undato = inputString;
       stringComplete = true;
@@ -214,6 +176,18 @@ void serialEvent() {
       moverZ();
       digitalWrite(Z_DIR, LOW);
       stringComplete = true;
+    }
+    else if(inChar == 'D')
+    {
+      stringComplete = true;
+      Serial.print("S");
+    }
+    else if(inChar == 'F')
+    {
+     datoX = datoY =  datoViejoX = datoViejoY = avanceCorto = acumCorto = comparador = 0.0;
+     deltaX = deltaY = 0;
+      digitalWrite(X_DIR, LOW);
+      digitalWrite(Y_DIR, LOW);
     }
   }
 }
