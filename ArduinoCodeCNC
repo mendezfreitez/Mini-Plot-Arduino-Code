@@ -9,13 +9,17 @@ int Y_STEP = 16;
 int Y_DIR = 17;
 int X_STEP = 14;
 int X_DIR = 15;
+int Motores_ON_OFF = 13;
 float datoX = 0.0; float datoY = 0.0; //-----------------------------datos nuevos en X y en Y
 float datoViejoX = 0.0; float datoViejoY = 0.0; //-------------------datos viejos en X y en Y, heredados siempre de "datoX y datoY"
 float deltaX = 0; float deltaY = 0;//-------------------------valores absolutos en X y Y
 float avanceCorto = 0.0;//---------------------------------resultado de dividir "larga/corta" declaradas en la lineas superiores
 float acumCorto = 0.0;//-----------------------------------acumula la variable "avanceCorto" declarada en la linea superior
 float comparador = 0.0;//----------------------------------se va a comparar con "avanceCorto" declarado en linea 10
-
+//COMENTABLE
+int contX = 0;
+int contY = 0;
+//COMENTABLE
 void setup() {
   Serial.begin(9600);
   
@@ -28,6 +32,7 @@ void setup() {
   pinMode(Y_DIR, OUTPUT);
   pinMode(Z_STEP, OUTPUT);
   pinMode(Z_DIR, OUTPUT);
+  pinMode(Motores_ON_OFF, OUTPUT);
 }
 
 void loop() {
@@ -66,27 +71,28 @@ void mover() {
     {
       avanceCorto = (float)deltaX / (float)deltaY; //Serial.println(avanceCorto); 
     }
-    for (int t = 0; t < deltaX; t++) //-------------------------------se recorre el "deltaX" por ser la coordenada mas larga en el plano cartesiano
+    for (int t = 0; t < deltaX; t++) //-------------se recorre el "deltaX" por ser la coordenada mas larga en el plano
     {
-      ///////////////////////////////////////////////// PASO EN X
+      //////////////////////////////////// PASO EN X
       digitalWrite(X_STEP, HIGH);
       delay(5);
       digitalWrite(X_STEP, LOW);
+      //contX++;////////////////////////////////////////////////////////////////////////COMENTABLE
       if (deltaY > 0)
       {
         if (t >= acumCorto)
         {
-          ///////////////////////////////////////////////// PASO EN Y
+          /////////////////////////////// PASO EN Y
           digitalWrite(Y_STEP, HIGH);
           delay(5);
           digitalWrite(Y_STEP, LOW);
-
+          //contY++;////////////////////////////////////////////////////////////////////////COMENTABLE
           acumCorto += avanceCorto;
         }
         else
         {
           delay(5);
-        }
+        } 
       }
     }
     acumCorto = avanceCorto = 0.0;
@@ -97,13 +103,13 @@ void mover() {
     {
       avanceCorto = (float)deltaY / (float)deltaX;
     }
-    for (int t = 0; t < deltaY; t++) //-------------------------------se recorre el "deltaY" por ser la coordenada mas larga en el plano cartesiano
+    for (int t = 0; t < deltaY; t++) //--------------se recorre el "deltaY" por ser la coordenada mas larga en el plano cartesiano
     {
       ///////////////////////////////////////////////// PASO EN Y
       digitalWrite(Y_STEP, HIGH);
       delay(5);
       digitalWrite(Y_STEP, LOW);
-      
+      //contY++;////////////////////////////////////////////////////////////////////////COMENTABLE
       if (deltaX > 0)
       {
         if (t >= acumCorto)
@@ -112,7 +118,7 @@ void mover() {
           digitalWrite(X_STEP, HIGH);
           delay(5);
           digitalWrite(X_STEP, LOW);
-          
+          //contX++;////////////////////////////////////////////////////////////////////////COMENTABLE
           acumCorto += avanceCorto;
         }
         else
@@ -132,12 +138,15 @@ void mover() {
         delay(5);
         digitalWrite(X_STEP, LOW);
         digitalWrite(Y_STEP, LOW);
+        // contX++;
+        // contY++;
     }
   }
 
   datoViejoX = datoX;
   datoViejoY = datoY;
-
+  //Serial.print("X" + (String)contX + " Y" + (String)contY);//COMENTABLE
+  //contX = contY = 0; ////////////////////////////////////////COMENTABLE
   Serial.print("S");
 }
 
@@ -146,7 +155,7 @@ void serialEvent() {
   while (Serial.available()) {
     char inChar = (char)Serial.read();
 
-    if (inChar != 'x' && inChar != 'y' && inChar != 's' && inChar != 'b' && inChar != 'D' && inChar != 'F')
+    if (inChar != 'x' && inChar != 'y' && inChar != 's' && inChar != 'b' && inChar != 'D' && inChar != 'F' && inChar != 'R')
     {
       inputString += inChar;
     }
@@ -188,6 +197,10 @@ void serialEvent() {
      deltaX = deltaY = 0;
       digitalWrite(X_DIR, LOW);
       digitalWrite(Y_DIR, LOW);
+      digitalWrite(Motores_ON_OFF, LOW);
+    }
+    else if(inChar == 'R'){ ///////// Encender alimentación a motores
+      digitalWrite(Motores_ON_OFF, HIGH);
     }
   }
 }
